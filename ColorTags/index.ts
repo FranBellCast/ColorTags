@@ -1,4 +1,3 @@
-import { getPropsWithDefaults } from "@fluentui/react";
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
 import { IMultiSelectProps, MultiselectWithTags } from "./MultiSelect";
 import * as React from "react";
@@ -24,6 +23,16 @@ export class ColorTags
     context: ComponentFramework.Context<IInputs>
   ): React.ReactElement {
     this.context = context;
+
+    // Define the color mapping
+    const colorMapping: { [key: string]: string } = {
+      Alto: "#FF0000", // Example color for "Alto"
+      Bajo: "#00FF00", // Example color for "Bajo"
+      Seguimiento: "#0000FF", // Example color for "Seguimiento"
+      // Add more mappings as needed
+    };
+
+    // Ensure all required props are provided and correctly typed
     const props: IMultiSelectProps = {
       utils: context.utils,
       webApi: context.webAPI,
@@ -48,7 +57,9 @@ export class ColorTags
       bestEffort: false,
       searchColumns: "",
       matchWords: "all",
+      colorMapping: colorMapping, // Pass colorMapping here
     };
+
     return React.createElement(MultiselectWithTags, props);
   }
 

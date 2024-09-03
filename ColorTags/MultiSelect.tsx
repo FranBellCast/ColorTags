@@ -44,6 +44,7 @@ export interface IMultiSelectProps {
   searchMode: "simple" | "advanced";
   matchWords: "all" | "any";
   searchColumns: string;
+  colorMapping: { [key: string]: string };
 }
 
 const useStyles = makeStyles({
@@ -290,7 +291,6 @@ export const MultiselectWithTags: React.FC<IMultiSelectProps> = (
   // fire AddNew callback
   React.useEffect(() => {
     if (addNew) {
-      //TODO: find a cleaner way to drop focus on AddNew: Combobox can sometimes overlay the QuickCreate panel for a second
       if (comboboxRef.current) {
         comboboxRef.current.blur();
       }
@@ -322,115 +322,113 @@ export const MultiselectWithTags: React.FC<IMultiSelectProps> = (
     <FluentProvider theme={props.theme} style={{ width: "100%" }} className={
       props.labelLocation === "above" ? styles.root : styles.leftlabel
     }>
-        <Label style={{ width: props.labelWidth ?? "140px", paddingTop: "5px" }}>
-          {props.label}
-        </Label>
-        <div className={styles.root} style={{width: "320px"}}>
-          <Combobox
-            ref={comboboxRef}
-            multiselect={true}
-            selectedOptions={selectedOptions}
-            appearance="filled-lighter"
-            aria-labelledby={comboId}
-            placeholder={hasFocus ? "" : "---"}
-            style={{ background: "#F5F5F5", width: "300px", paddingTop: "0px" }}
-            expandIcon={<GlobeSearchRegular />}
-            onFocus={(_e) => {
-              setHasFocus(true);
-            }}
-            onBlur={(_e) => {
-              setHasFocus(false);
-            }}
-            onInput={
-              (ev: React.ChangeEvent<HTMLInputElement>) => {
-                props.searchMode === "advanced" ?
-                  setInputValue(ev.target.value) : 
-                  setSimpleSearchTerm(ev.target.value)
-              }
+      <Label style={{ width: props.labelWidth ?? "140px", paddingTop: "5px" }}>
+        {props.label}
+      </Label>
+      <div className={styles.root} style={{width: "320px"}}>
+        <Combobox
+          ref={comboboxRef}
+          multiselect={true}
+          selectedOptions={selectedOptions}
+          appearance="filled-lighter"
+          aria-labelledby={comboId}
+          placeholder={hasFocus ? "" : "---"}
+          style={{ background: "#F5F5F5", width: "300px", paddingTop: "0px" }}
+          expandIcon={<GlobeSearchRegular />}
+          onFocus={(_e) => {
+            setHasFocus(true);
+          }}
+          onBlur={(_e) => {
+            setHasFocus(false);
+          }}
+          onInput={
+            (ev: React.ChangeEvent<HTMLInputElement>) => {
+              props.searchMode === "advanced" ?
+                setInputValue(ev.target.value) : 
+                setSimpleSearchTerm(ev.target.value)
             }
-            onOptionSelect={(_event, data) => {
-              onSelectItems(data.selectedOptions);
-            }}
-            type="search"
-          >
-            {targetCollectionName && (
-              <Text
-                style={{
-                  margin: "5px",
-                  padding: "5px",
-                }}
-              >
-                All {targetCollectionName ?? ""}
-              </Text>
-            )}
-            {options && options.length > 0 &&
-              options.map((option) => (
-                <Option key={option[targetPrimaryColumn]}>
-                  {option[targetPrimaryColumn]}
-                </Option>
-              ))}
-            {props.allowAddNew && (
-              <>
-                <Divider />
-                <div className={styles.wrapper}>
-                  <Button
-                    icon={<AddRegular />}
-                    appearance="subtle"
-                    onClick={() => setAddNew(true)}
-                  >
-                    New {targetDisplayName ?? ""}
-                  </Button>
-                </div>
-              </>
-            )}
-          </Combobox>
-          {progressBar && (
-            <Field validationMessage="saving..." validationState="none">
-              <ProgressBar />
-            </Field>
+          }
+          onOptionSelect={(_event, data) => {
+            onSelectItems(data.selectedOptions);
+          }}
+          type="search"
+        >
+          {targetCollectionName && (
+            <Text
+              style={{
+                margin: "5px",
+                padding: "5px",
+              }}
+            >
+              All {targetCollectionName ?? ""}
+            </Text>
           )}
-          {selectedOptions.length ? (
-            // testing future consolidation of tags and search box
-            // <div style={{background: "#F5F5F5", borderRadius:"5px", width: "100%", height: "auto", alignItems:"center"}} className={styles.leftlabel}>
-              <ul id={selectedListId} className={styles.tagsList} >
-                {/* The "Remove" span is used for naming the buttons without affecting the Combobox name */}
-                <span id={`${comboId}-remove`} hidden>
-                  Remove
-                </span>
-                {selectedOptions.map((option, i) => (
-                  <li key={option}>
-                    <SplitButton
-                      size="small"
-                      shape="circular"
-                      appearance="primary"
-                      menuButton={{
-                        style: {
-                          color: "rgb(17, 94, 163)",
-                          background: "rgb(235, 243, 252)",
-                        },
-                        onClick: () => onClickClose(option),
-                      }}
-                      menuIcon={<Dismiss12Regular />}
-                      primaryActionButton={{
-                        style: {
-                          color: "rgb(17, 94, 163)",
-                          background: "rgb(235, 243, 252)",
-                        },
-                        onClick: () => onClickPrimary(option),
-                      }}
-                      id={`${comboId}-remove-${i}`}
-                      aria-labelledby={`${comboId}-remove ${comboId}-remove-${i}`}
-                    >
-                      {option}
-                    </SplitButton>
-                  </li>
-                ))}
-              </ul>
-              // testing future consolidation of tags and search box
-              // <GlobeSearchRegular style={{height: "20px", width: "20px", flexShrink: 0, color: "#616161", paddingRight: "8px"}}/>
-            // </div>
-          ) : null}
-        </div>
+          {options && options.length > 0 &&
+            options.map((option) => (
+              <Option key={option[targetPrimaryColumn]}>
+                {option[targetPrimaryColumn]}
+              </Option>
+            ))}
+          {props.allowAddNew && (
+            <>
+              <Divider />
+              <div className={styles.wrapper}>
+                <Button
+                  icon={<AddRegular />}
+                  appearance="subtle"
+                  onClick={() => setAddNew(true)}
+                >
+                  New {targetDisplayName ?? ""}
+                </Button>
+              </div>
+            </>
+          )}
+        </Combobox>
+        {progressBar && (
+          <Field validationMessage="saving..." validationState="none">
+            <ProgressBar />
+          </Field>
+        )}
+        {selectedOptions.length ? (
+          <ul id={selectedListId} className={styles.tagsList} >
+            <span id={`${comboId}-remove`} hidden>
+              Remove
+            </span>
+            {selectedOptions.map((option, i) => {
+              // Get the color from the mapping
+              const color = props.colorMapping?.[option] || "#CCCCCC"; // Default color if no mapping
+              return (
+                <li key={option} style={{ backgroundColor: color }}>
+                  <SplitButton
+                    size="small"
+                    shape="circular"
+                    appearance="primary"
+                    menuButton={{
+                      style: {
+                        color: "rgb(17, 94, 163)",
+                        background: "rgb(235, 243, 252)",
+                      },
+                      onClick: () => onClickClose(option),
+                    }}
+                    menuIcon={<Dismiss12Regular />}
+                    primaryActionButton={{
+                      style: {
+                        color: "rgb(17, 94, 163)",
+                        background: "rgb(235, 243, 252)",
+                      },
+                      onClick: () => onClickPrimary(option),
+                    }}
+                    id={`${comboId}-remove-${i}`}
+                    aria-labelledby={`${comboId}-remove ${comboId}-remove-${i}`}
+                  >
+                    {option}
+                  </SplitButton>
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
+      </div>
     </FluentProvider>
   );
 };
